@@ -37,13 +37,15 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
     try {
       const { username, password } = req.body;
-  
+    
       // Find the user by username
       const user = await User.findOne({ username });
+      
       if (!user) {
         return res.status(401).json({ message: 'Invalid username or password' });
       }
-  
+      const uniqueuser=user.username;
+      const role=user.role;
       // Compare passwords
       const passwordMatch = await bcrypt.compare(password, user.password);
       if (!passwordMatch) {
@@ -53,7 +55,7 @@ router.post('/login', async (req, res) => {
       // Generate a JWT token
       const token = jwt.sign({ userId: user._id, role: user.role }, process.env.secret_key);
   
-      res.status(200).json({ token });
+      res.status(200).json({uniqueuser,role,token} );
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: 'Internal server error' });
