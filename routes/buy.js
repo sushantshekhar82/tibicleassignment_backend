@@ -3,6 +3,7 @@ const express = require('express');
 const authMiddleware = require('../middleware/auth'); // Assume you have an authentication middleware
 const User = require('../model/user');
 const Product = require('../model/products');
+const PurchaseHistory = require('../model/purchasehistory');
 
 const buyRoutes = express.Router();
 
@@ -38,6 +39,13 @@ buyRoutes.post('/buy/:productId', authMiddleware, async (req, res) => {
     // Update the product's available amount
     product.amountAvailable -= amount;
     await product.save();
+// Record the purchase in the purchase history
+const purchase = new PurchaseHistory({
+    userId: req.user._id,
+    productId,
+    quantity: amount
+  });
+  await purchase.save();
 
     res.status(200).json({
       message: 'Purchase successful',
