@@ -3,6 +3,8 @@ const mongoose=require("mongoose")
 const cors = require('cors')
 const router = require('./routes/user')
 const prodrouter = require('./routes/products')
+const depositRoutes = require('./routes/deposit');
+const buyRoutes = require('./routes/buy')
 require('dotenv').config()
 const app=express()
 app.use(express.json())
@@ -12,7 +14,8 @@ app.get("/",(req,res)=>{
 })
 app.use("/api/user",router)
 app.use("/api/prod",prodrouter)
-
+app.use('/api/vending-machine', depositRoutes);
+app.use('/api/vending-machine',buyRoutes);
 app.listen(process.env.port,async()=>{
     try {
        mongoose.connect(process.env.mongourl) 
