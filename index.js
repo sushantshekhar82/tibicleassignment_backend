@@ -10,9 +10,9 @@ const purchaserouter = require('./routes/purchasehistory')
 require('dotenv').config()
 const app=express()
 app.use(express.json())
-app.use(cors({ origin: ['https://myntracloneproject.vercel.app','https://myntrawebproject.netlify.app','http://localhost:3000'], optionsSuccessStatus: 200 }));
+app.use(cors({ origin: ['https://vendingmachine-theta.vercel.app','http://localhost:3000'], optionsSuccessStatus: 200 }));
 
-app.options("*", cors({ origin: ['https://myntracloneproject.vercel.app','https://myntrawebproject.netlify.app','http://localhost:3000'], optionsSuccessStatus: 200 }));
+app.options("*", cors({ origin: ['https://vendingmachine-theta.vercel.app','http://localhost:3000'], optionsSuccessStatus: 200 }));
 
 app.get("/",(req,res)=>{
     res.status(200).send("welcome")
