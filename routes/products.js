@@ -1,4 +1,3 @@
-// routes/products.js
 const express = require('express');
 const authMiddleware = require('../middleware/auth'); 
 const Product = require('../model/products');
@@ -16,6 +15,29 @@ prodrouter.get('/products', async (req, res) => {
   }
 });
 
+// Fetch products for a specific seller
+prodrouter.get('/products/seller/:sellerId', authMiddleware, async (req, res) => {
+  try {
+    if (req.user.role !== 'seller') {
+      return res.status(403).json({ message: 'Only sellers can view their products' });
+    }
+
+    const sellerId = req.params.sellerId;
+
+    // Check if the logged-in seller is requesting their own products
+    if (req.user._id.toString() !== sellerId) {
+      return res.status(403).json({ message: 'Unauthorized access to seller products' });
+    }
+
+    const products = await Product.find({ sellerId });
+
+    res.status(200).json(products);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 // Create a new product (accessible only to sellers)
 prodrouter.post('/products', authMiddleware, async (req, res) => {
   try {
@@ -23,10 +45,10 @@ prodrouter.post('/products', authMiddleware, async (req, res) => {
       return res.status(403).json({ message: 'Only sellers can create products' });
     }
 
-    const { productName, cost } = req.body;
+    const { productName, cost, amountAvailable } = req.body;
     const sellerId = req.user._id;
 
-    const newProduct = new Product({ productName, cost, sellerId });
+    const newProduct = new Product({ productName, cost, amountAvailable ,sellerId });
     await newProduct.save();
 
     res.status(201).json({ message: 'Product added successfully' });
@@ -58,7 +80,7 @@ prodrouter.put('/products/:productId', authMiddleware, async (req, res) => {
       return res.status(403).json({ message: 'Only sellers can update products' });
     }
 
-    const { productName, cost } = req.body;
+    const { productName, cost,amountAvailable } = req.body;
     const product = await Product.findById(req.params.productId);
     if (!product) {
       return res.status(404).json({ message: 'Product not found' });
@@ -66,6 +88,7 @@ prodrouter.put('/products/:productId', authMiddleware, async (req, res) => {
 
     product.productName = productName;
     product.cost = cost;
+    product.amountAvailable=amountAvailable
     await product.save();
 
     res.status(200).json({ message: 'Product updated successfully' });

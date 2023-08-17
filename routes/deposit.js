@@ -1,4 +1,3 @@
-// routes/deposit.js
 const express = require('express');
 const authMiddleware = require('../middleware/auth'); // Assume you have an authentication middleware
 const User = require('../model/user');
@@ -25,7 +24,7 @@ depositRoutes.post('/deposit', authMiddleware, async (req, res) => {
     user.deposit += totalDeposited;
     await user.save();
 
-    res.status(200).json({ message: 'Coins deposited successfully' });
+    res.status(200).json({ message: 'Coins deposited successfully',deposit:user.deposit });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Internal server error' });

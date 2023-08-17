@@ -1,4 +1,3 @@
-// routes/buy.js
 const express = require('express');
 const authMiddleware = require('../middleware/auth'); // Assume you have an authentication middleware
 const User = require('../model/user');
@@ -23,13 +22,13 @@ buyRoutes.post('/buy/:productId', authMiddleware, async (req, res) => {
     }
 
     if (amount <= 0) {
-      return res.status(400).json({ message: 'Invalid amount' });
+      return res.status(200).json({ message: 'Invalid amount' });
     }
 
     const totalCost = product.cost * amount;
 
     if (req.user.deposit < totalCost) {
-      return res.status(400).json({ message: 'Insufficient balance' });
+      return res.status(200).json({ message: 'Insufficient balance' });
     }
 
     // Deduct the cost from the user's deposit
@@ -43,7 +42,9 @@ buyRoutes.post('/buy/:productId', authMiddleware, async (req, res) => {
 const purchase = new PurchaseHistory({
     userId: req.user._id,
     productId,
-    quantity: amount
+    productName:product.productName,
+    quantity: amount,
+    sellerId: product.sellerId
   });
   await purchase.save();
 
